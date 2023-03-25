@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1085760037560",
+    "project_id": "alerto-6a6d2",
+    "storage_bucket": "alerto-6a6d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085760037560:android:ca5e9ddbd3f9205e60ca4d",
+        "android_client_info": {
+          "package_name": "com.anik.alerto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085760037560-a5d1tctbvc9mmdoaj4mgvn7r5nvn14c3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTMxgqKk69WkQCS9suDlPnfxa138q4WsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085760037560-a5d1tctbvc9mmdoaj4mgvn7r5nvn14c3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085760037560:android:48431b7d74ca5a2860ca4d",
+        "android_client_info": {
+          "package_name": "com.example.alerto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085760037560-a5d1tctbvc9mmdoaj4mgvn7r5nvn14c3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTMxgqKk69WkQCS9suDlPnfxa138q4WsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085760037560-a5d1tctbvc9mmdoaj4mgvn7r5nvn14c3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

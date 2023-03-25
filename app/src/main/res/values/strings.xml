@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ALERTO</string>
+    <string name="login_btn">Log in</string>
+    <string name="Proceed">Proceed</string>
+    <string name="register">Don\'t have an account?</string>
+    <string name="reg_btn"><u>Register</u></string>
+</resources>
