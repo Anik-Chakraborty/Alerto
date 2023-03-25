@@ -52,9 +52,17 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Intent notifyUser = new Intent(this, user_home.class);
-        PendingIntent actionForeground = PendingIntent.getActivity(
-                this, 0, notifyUser, PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        PendingIntent actionForeground = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            actionForeground = PendingIntent.getActivity(
+                    this, 0, notifyUser, PendingIntent.FLAG_UPDATE_CURRENT  | PendingIntent.FLAG_MUTABLE
+            );
+        }
+        else{
+            actionForeground = PendingIntent.getActivity(
+                    this, 0, notifyUser, PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -121,12 +129,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
 
         if(gForce>30 && flagSensorOnChange){
+            Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
-            editor.commit();
+            editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "High");
@@ -135,12 +144,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("High");
         }
         else if(gForce>20 && gForce<=30 && flagSensorOnChange){
+            Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
-            editor.commit();
+            editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "Medium");
@@ -149,12 +159,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("Medium");
         }
         else if(gForce> 5.5 && gForce<=20 && flagSensorOnChange){
+            Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
-            editor.commit();
+            editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "Low");
@@ -208,7 +219,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Intent iNotify = new Intent(getApplicationContext(), user_home.class);
         iNotify.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        }
+        else{
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT );
+        }
 
         Notification.InboxStyle inboxStyle = new Notification.InboxStyle()
                 .addLine("\uD83D\uDD51 Sending Help Request To SOS")
@@ -218,16 +235,32 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Intent actionActivityIntentHELP = new Intent(this, Receiver.class);
         actionActivityIntentHELP.putExtra(user_home.Message_KEY, "HELP");
-        PendingIntent actionHELPPending = PendingIntent.getBroadcast(
-                this, 0, actionActivityIntentHELP, PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        PendingIntent actionHELPPending = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            actionHELPPending = PendingIntent.getBroadcast(
+                    this, 0, actionActivityIntentHELP, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+            );
+        }
+        else{
+            actionHELPPending = PendingIntent.getBroadcast(
+                    this, 0, actionActivityIntentHELP, PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
         Notification.Action actionHELP = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.help),"Need Help", actionHELPPending).build();
 
         Intent actionActivityIntentFINE = new Intent(this, Receiver.class);
         actionActivityIntentFINE.putExtra(user_home.Message_KEY, "FINE");
-        PendingIntent actionFINEPending = PendingIntent.getBroadcast(
-                this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        PendingIntent actionFINEPending = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            actionFINEPending = PendingIntent.getBroadcast(
+                    this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+            );
+        }
+        else {
+            actionFINEPending = PendingIntent.getBroadcast(
+                    this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
         Notification.Action actionFINE = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.ok),"I Am Ok", actionFINEPending).build();
 
 
@@ -310,7 +343,10 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("accident_detect_flag",flagSensorOnChange);
-                editor.commit();
+                editor.putBoolean("accident_dialog",false);
+                editor.putBoolean("respond_dialog",false);
+                editor.putBoolean("respond_time_left",false);
+                editor.apply();
                 sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
             }
 
@@ -324,7 +360,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Intent iNotify = new Intent(getApplicationContext(), user_home.class);
         iNotify.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        }
+        else{
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT );
+        }
 
         Notification.InboxStyle inboxStyle = new Notification.InboxStyle()
                 .addLine("✓ Message Delivered To SOS Contacts");
@@ -338,9 +380,17 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Intent actionActivityIntentFINE = new Intent(this, Receiver.class);
         actionActivityIntentFINE.putExtra(user_home.Message_KEY, "FINE");
-        PendingIntent actionFINEPending = PendingIntent.getBroadcast(
-                this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        PendingIntent actionFINEPending = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            actionFINEPending = PendingIntent.getBroadcast(
+                    this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+            );
+        }
+        else{
+            actionFINEPending = PendingIntent.getBroadcast(
+                    this, 1, actionActivityIntentFINE, PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
         Notification.Action actionFINE = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.ok),"I Am OK", actionFINEPending).build();
 
 
@@ -397,7 +447,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Intent iNotify = new Intent(getApplicationContext(), user_home.class);
         iNotify.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        }
+        else{
+            pi = PendingIntent.getActivity(this, REQ_CODE, iNotify, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         Notification.InboxStyle inboxStyle = new Notification.InboxStyle()
                 .addLine("✓ Message Delivered To SOS Contacts")

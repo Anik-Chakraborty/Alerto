@@ -21,6 +21,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -50,6 +51,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
 
 
             if(Message.equals("Low")){
+                Log.i("Accident Level", "Low");
                 editor.putBoolean("accident_dialog",true);
                 editor.apply();
                 setView();
@@ -57,6 +59,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 accident_dialog_level_txt.setText("We Detected A Low Crash");
             }
             else if(Message.equals("Medium")){
+                Log.i("Accident Level", "Medium");
                 editor.putBoolean("accident_dialog",true);
                 editor.apply();
                 setView();
@@ -64,6 +67,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 accident_dialog_level_txt.setText("We Detected A Medium Crash");
             }
             else if(Message.equals("High")){
+                Log.i("Accident Level", "High");
                 editor.putBoolean("accident_dialog",true);
                 editor.apply();
                 setView();
@@ -71,10 +75,12 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 accident_dialog_level_txt.setText("We Detected A High Crash");
             }
             else if(Message.contains("Time1")&& accident_dialog.getVisibility() == View.VISIBLE){
+                Log.i("Time", "Time1");
                 String Time = Message.substring(6);
                 accident_dialog_timer_txt.setText("Calling for help in "+Time+" seconds");
             }
             else if(Message.contains("Time2")){
+                Log.i("Time", "Time2");
                 editor.putBoolean("accident_dialog",false);
                 editor.putBoolean("respond_dialog",true);
                 editor.putBoolean("respond_time_left",true);
@@ -87,6 +93,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 respondTimeLeft.setText("\uD83D\uDD51 Sending Respond to Emergency Service in "+Time+" .");
             }
             else if(Message.equals("TimeEmergencyComplete")){
+                Log.i("Time", "TimeEmergencyComplete");
                 editor.putBoolean("respond_dialog",true);
                 editor.putBoolean("respond_time_left",true);
                 editor.apply();
@@ -96,6 +103,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 respondTimeLeft.setText("✓ Respond Sent To Emergency Contacts");
             }
             else if(Message.equals("TimeSOSComplete") && accident_dialog.getVisibility() == View.VISIBLE){
+                Log.i("Time", "TimeSOSComplete");
                 editor.putBoolean("accident_dialog",false);
                 editor.putBoolean("respond_dialog",true);
                 editor.putBoolean("respond_time_left",false);
@@ -213,6 +221,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
     }
 
     private void setView() {
+        Log.i("Set View", "Update View");
         SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
 
         accident_dialog_visibility_flag = sharedPreferences.getBoolean("accident_dialog", false);
