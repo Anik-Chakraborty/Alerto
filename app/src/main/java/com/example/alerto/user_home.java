@@ -39,80 +39,51 @@ public class user_home extends AppCompatActivity implements LocationListener {
     ConstraintLayout accident_dialog, speed_dialog;
     LinearLayout respondDialog;
     Button accident_dialog_help_btn;
-    boolean checkSpeed=false, accident_dialog_visibility_flag, respond_dialog_visibility_flag,respond_dialog_time_left_visibility_flag;
+    boolean checkSpeed=false;
 
     private BroadcastReceiver accReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            String Message = intent.getStringExtra(Message_KEY);
 
-            SharedPreferences sharedPreferences = getSharedPreferences("View_Visible", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String Message = intent.getStringExtra(Message_KEY);
 
+                    SharedPreferences sharedPreferences = getSharedPreferences("View_Visible", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
 
-            if(Message.equals("Low")){
-                Log.i("Accident Level", "Low");
-                editor.putBoolean("accident_dialog",true);
-                editor.apply();
-                setView();
-                accident_dialog.setVisibility(View.VISIBLE);
-                accident_dialog_level_txt.setText("We Detected A Low Crash");
-            }
-            else if(Message.equals("Medium")){
-                Log.i("Accident Level", "Medium");
-                editor.putBoolean("accident_dialog",true);
-                editor.apply();
-                setView();
-                accident_dialog.setVisibility(View.VISIBLE);
-                accident_dialog_level_txt.setText("We Detected A Medium Crash");
-            }
-            else if(Message.equals("High")){
-                Log.i("Accident Level", "High");
-                editor.putBoolean("accident_dialog",true);
-                editor.apply();
-                setView();
-                accident_dialog.setVisibility(View.VISIBLE);
-                accident_dialog_level_txt.setText("We Detected A High Crash");
-            }
-            else if(Message.contains("Time1")&& accident_dialog.getVisibility() == View.VISIBLE){
-                Log.i("Time", "Time1");
-                String Time = Message.substring(6);
-                accident_dialog_timer_txt.setText("Calling for help in "+Time+" seconds");
-            }
-            else if(Message.contains("Time2")){
-                Log.i("Time", "Time2");
-                editor.putBoolean("accident_dialog",false);
-                editor.putBoolean("respond_dialog",true);
-                editor.putBoolean("respond_time_left",true);
-                editor.apply();
-                setView();
-                accident_dialog.setVisibility(View.GONE);
-                String Time = Message.substring(6);
-                respondTimeLeft.setVisibility(View.VISIBLE);
-                respondDialog.setVisibility(View.VISIBLE);
-                respondTimeLeft.setText("\uD83D\uDD51 Sending Respond to Emergency Service in "+Time+" .");
-            }
-            else if(Message.equals("TimeEmergencyComplete")){
-                Log.i("Time", "TimeEmergencyComplete");
-                editor.putBoolean("respond_dialog",true);
-                editor.putBoolean("respond_time_left",true);
-                editor.apply();
-                setView();
-                respondDialog.setVisibility(View.VISIBLE);
-                respondTimeLeft.setVisibility(View.VISIBLE);
-                respondTimeLeft.setText("✓ Respond Sent To Emergency Contacts");
-            }
-            else if(Message.equals("TimeSOSComplete") && accident_dialog.getVisibility() == View.VISIBLE){
-                Log.i("Time", "TimeSOSComplete");
-                editor.putBoolean("accident_dialog",false);
-                editor.putBoolean("respond_dialog",true);
-                editor.putBoolean("respond_time_left",false);
-                editor.apply();
-                setView();
-                accident_dialog.setVisibility(View.GONE);
-                respondTimeLeft.setVisibility(View.GONE);
-                respondDialog.setVisibility(View.VISIBLE);
-            }
+                    if(Message.equals("Low")){
+                        Log.i("Accident Level", "Low");
+                        accident_dialog_level_txt.setText("We Detected A Low Crash");
+                    }
+                    else if(Message.equals("Medium")){
+                        Log.i("Accident Level", "Medium");
+                        accident_dialog_level_txt.setText("We Detected A Medium Crash");
+                    }
+                    else if(Message.equals("High")){
+                        Log.i("Accident Level", "High");
+                        accident_dialog_level_txt.setText("We Detected A High Crash");
+                    }
+                    else if(Message.contains("Time1")&& accident_dialog.getVisibility() == View.VISIBLE){
+                        Log.i("Time", "Time1");
+                        String Time = Message.substring(6);
+                        accident_dialog_timer_txt.setText("Calling for help in "+Time+" seconds");
+                    }
+                    else if (Message.equals("TimeSecondFirst")) {
+                        setView();
+                    }
+                    else if(Message.contains("Time2")){
+                        Log.i("Time", "Time2");
+                        String Time = Message.substring(6);
+                        respondTimeLeft.setText("\uD83D\uDD51 Sending Respond to Emergency Service in "+Time+" .");
+                    }
+                    else if(Message.equals("TimeEmergencyComplete")){
+                        Log.i("Time", "TimeEmergencyComplete");
+                        respondTimeLeft.setText("✓ Respond Sent To Emergency Contacts");
+                    }
+                    else if(Message.equals("TimeSOSComplete") && accident_dialog.getVisibility() == View.VISIBLE){
+                        Log.i("Time", "TimeSOSComplete");
+                        setView();
+                    }
 
         }
     };
@@ -120,6 +91,10 @@ public class user_home extends AppCompatActivity implements LocationListener {
 
     private void iAmOkay() {
         Toast.makeText(user_home.this, "okay", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent("Activity_Message");
+        intent.putExtra(user_home.Message_KEY, "USER_FINE");
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
     }
 
     private void needHelp() {
@@ -187,6 +162,12 @@ public class user_home extends AppCompatActivity implements LocationListener {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        setView();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(accReceiver,new IntentFilter(G_Force_Counter.SERVICE_MESSAGE));
@@ -214,19 +195,13 @@ public class user_home extends AppCompatActivity implements LocationListener {
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        setView();
-    }
 
     private void setView() {
-        Log.i("Set View", "Update View");
-        SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
 
-        accident_dialog_visibility_flag = sharedPreferences.getBoolean("accident_dialog", false);
-        respond_dialog_visibility_flag = sharedPreferences.getBoolean("respond_dialog",false);
-        respond_dialog_time_left_visibility_flag = sharedPreferences.getBoolean("respond_time_left",false);
+        SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+        boolean accident_dialog_visibility_flag = sharedPreferences.getBoolean("accident_dialog", false);
+        boolean respond_dialog_visibility_flag = sharedPreferences.getBoolean("respond_dialog",false);
+        boolean respond_dialog_time_left_visibility_flag = sharedPreferences.getBoolean("respond_time_left",false);
 
         if(accident_dialog_visibility_flag){
             accident_dialog.setVisibility(View.VISIBLE);
@@ -248,6 +223,11 @@ public class user_home extends AppCompatActivity implements LocationListener {
         else{
             respondTimeLeft.setVisibility(View.GONE);
         }
+
+
+
+        Log.i("Set View", "Update View");
+
     }
 
     @Override
@@ -255,6 +235,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(accReceiver);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,11 +248,10 @@ public class user_home extends AppCompatActivity implements LocationListener {
         detectSpeedSwitch = findViewById(R.id.detectSpeed);
         accident_dialog_level_txt = findViewById(R.id.accident_dialog_level_txt);
         accident_dialog_timer_txt = findViewById(R.id.accident_dialog_timer_txt);
-        respondDialog = (LinearLayout) findViewById(R.id.respondDialog);
+        respondDialog = findViewById(R.id.respondDialog);
         respondTimeLeft = findViewById(R.id.respondTimeLeft);
         accident_dialog_help_btn = findViewById(R.id.accident_dialog_help_btn);
         check = findViewById(R.id.check);
-
 
         if(isMyServiceRunning(G_Force_Counter.class)){
             detectAccidentSwitch.setChecked(true);
@@ -383,14 +363,15 @@ public class user_home extends AppCompatActivity implements LocationListener {
         SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
         boolean flagSensorOnChange = sharedPreferences.getBoolean("accident_detect_flag",true);
 
+
         if(flagSensorOnChange){
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_dialog",false);
             editor.putBoolean("respond_dialog",false);
             editor.putBoolean("respond_time_left",false);
             editor.apply();
-            setView();
         }
+        setView();
     }
 
     //location

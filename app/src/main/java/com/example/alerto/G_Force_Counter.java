@@ -5,6 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -35,12 +37,13 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     private static final int NOTIFICATION_ACCIDENT_DETECT_ID = 101;
     private static final int REQ_CODE = 100;
     public static final String SERVICE_MESSAGE = "Service_Message";
-    public static long timeLeft = 60000;
     Sensor accelerometerSensor;
     SensorManager sensorManager;
     Notification notification;
     NotificationManager notificationManager;
     boolean flagSensorOnChange;
+
+    CountDownTimer countDownTimer;
 
     @Nullable
     @Override
@@ -68,7 +71,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             Notification notificationForeground = new Notification.Builder(this, Foreground_NOTIFICATION_CHANNEL)
-                    .setSmallIcon(R.mipmap.alerto_logo)
+                    .setSmallIcon(R.drawable.splash_logo)
                     .setContentText("Service For Accident Detection is running")
                     .setSubText("Service Running")
                     .setChannelId(Foreground_NOTIFICATION_CHANNEL)
@@ -135,6 +138,9 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
+            editor.putBoolean("accident_dialog",true);
+            editor.putBoolean("respond_dialog",false);
+            editor.putBoolean("respond_time_left",false);
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
@@ -150,6 +156,9 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
+            editor.putBoolean("accident_dialog",true);
+            editor.putBoolean("respond_dialog",false);
+            editor.putBoolean("respond_time_left",false);
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
@@ -165,6 +174,9 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             gForce =0;
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("accident_detect_flag",flagSensorOnChange);
+            editor.putBoolean("accident_dialog",true);
+            editor.putBoolean("respond_dialog",false);
+            editor.putBoolean("respond_time_left",false);
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
@@ -178,10 +190,11 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
 
     private void callCounterTimerForNotification(String levelAccident) {
-        CountDownTimer countDownTimer = new CountDownTimer(timeLeft, 1000) {
+
+         countDownTimer = new CountDownTimer(60000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                timeLeft = millisUntilFinished;
+                long timeLeft = millisUntilFinished;
                 displayNotification((int)timeLeft/1000, levelAccident);
 
                 //local broadcast to update accident dialog timer
@@ -192,7 +205,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
             @Override
             public void onFinish() {
-                timeLeft =0;
+                long timeLeft =0;
                 displayNotification((int) timeLeft/1000, levelAccident);
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
 
@@ -229,7 +242,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
         Notification.InboxStyle inboxStyle = new Notification.InboxStyle()
                 .addLine("\uD83D\uDD51 Sending Help Request To SOS")
-                .addLine("Contacts In"+" "+(G_Force_Counter.timeLeft /1000)+" seconds");
+                .addLine("Contacts In"+" "+(timeLeft)+" seconds");
 
         //Notification action button intents
 
@@ -301,10 +314,21 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             //push notification
 
             if(!levelAccident.equals("Low")){
-                CountDownTimer countDownTimer = new CountDownTimer(45000, 1000) {
+                SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("accident_dialog",false);
+                editor.putBoolean("respond_dialog",true);
+                editor.putBoolean("respond_time_left",true);
+
+                Intent intent = new Intent(SERVICE_MESSAGE);
+                intent.putExtra(user_home.Message_KEY, "TimeSecondFirst");
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+                 countDownTimer = new CountDownTimer(45000, 1000) {
+
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        timeLeft = millisUntilFinished;
+                        long timeLeft = millisUntilFinished;
                         displayNotificationSOS((int)timeLeft/1000, levelAccident);
 
                         Intent intent = new Intent(SERVICE_MESSAGE);
@@ -314,20 +338,25 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
                     @Override
                     public void onFinish() {
-                        timeLeft =0;
+                        long timeLeft =0;
                         displayNotificationSOS((int) timeLeft/1000, levelAccident);
                         notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
                         notifyEmergency(levelAccident);
+
+                        flagSensorOnChange = true;
+
+                        SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("respond_dialog",true);
+                        editor.putBoolean("respond_time_left",true);
+                        editor.putBoolean("accident_dialog",false);
+                        editor.putBoolean("accident_detect_flag",flagSensorOnChange);
+                        editor.apply();
 
                         Intent intent = new Intent(SERVICE_MESSAGE);
                         intent.putExtra(user_home.Message_KEY, "TimeEmergencyComplete");
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-                        flagSensorOnChange = true;
-                        SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("accident_detect_flag",flagSensorOnChange);
-                        editor.apply();
                         sensorManager.registerListener((SensorEventListener) getApplicationContext(), accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
 
                     }
@@ -342,17 +371,16 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 flagSensorOnChange = true;
                 SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("accident_detect_flag",flagSensorOnChange);
                 editor.putBoolean("accident_dialog",false);
-                editor.putBoolean("respond_dialog",false);
+                editor.putBoolean("respond_dialog",true);
                 editor.putBoolean("respond_time_left",false);
+                editor.putBoolean("accident_detect_flag",flagSensorOnChange);
                 editor.apply();
                 sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
             }
 
 
         }
-
 
     }
 
@@ -414,7 +442,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         else{
             builder.setAutoCancel(false).setOngoing(true);
             inboxStyle.addLine("\uD83D\uDD51 Sending Help Request To Emergency")
-                    .addLine("Service In"+" "+(G_Force_Counter.timeLeft /1000)+" seconds");
+                    .addLine("Service In"+" "+(timeLeft)+" seconds");
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -427,6 +455,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         notificationManager.notify(NOTIFICATION_ACCIDENT_DETECT_ID, (Notification) notification);
 
     }
+
 
 
     private void notifyEmergency(String levelAccident) {
@@ -507,5 +536,18 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String Message = intent.getStringExtra("Activity_Message");
+
+            if(Message.equals("USER_FINE")){
+                countDownTimer.cancel();
+                notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+
+            }
+        }
+    };
 
 }
