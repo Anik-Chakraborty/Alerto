@@ -54,14 +54,17 @@ public class user_home extends AppCompatActivity implements LocationListener {
                     if(Message.equals("Low")){
                         Log.i("Accident Level", "Low");
                         accident_dialog_level_txt.setText("We Detected A Low Crash");
+                        setView();
                     }
                     else if(Message.equals("Medium")){
                         Log.i("Accident Level", "Medium");
                         accident_dialog_level_txt.setText("We Detected A Medium Crash");
+                        setView();
                     }
                     else if(Message.equals("High")){
                         Log.i("Accident Level", "High");
                         accident_dialog_level_txt.setText("We Detected A High Crash");
+                        setView();
                     }
                     else if(Message.contains("Time1")&& accident_dialog.getVisibility() == View.VISIBLE){
                         Log.i("Time", "Time1");

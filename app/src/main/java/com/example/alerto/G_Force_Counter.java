@@ -319,6 +319,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 editor.putBoolean("accident_dialog",false);
                 editor.putBoolean("respond_dialog",true);
                 editor.putBoolean("respond_time_left",true);
+                editor.apply();
 
                 Intent intent = new Intent(SERVICE_MESSAGE);
                 intent.putExtra(user_home.Message_KEY, "TimeSecondFirst");
@@ -357,7 +358,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                         intent.putExtra(user_home.Message_KEY, "TimeEmergencyComplete");
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-                        sensorManager.registerListener((SensorEventListener) getApplicationContext(), accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
+                        sensorManager.registerListener(G_Force_Counter.this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
 
                     }
                 }.start();
