@@ -61,108 +61,109 @@
     </LinearLayout>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/accident_dialog"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="10dp">
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/accident_dialog"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/alert_shape"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingTop="40dp"
-            android:paddingHorizontal="20dp"
-            android:paddingBottom="20dp"
-            android:layout_marginTop="30dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone"
+            android:layout_marginTop="10dp">
 
-            <TextView
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/alert_shape"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="40dp"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="20dp"
+                android:layout_marginTop="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/copperplate_gothic"
+                    android:padding="5dp"
+                    android:text="CRASH"
+                    android:textColor="@color/white"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/copperplate_gothic"
+                    android:padding="5dp"
+                    android:text="DETECTED"
+                    android:textColor="@color/white"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/accident_dialog_level_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/segoe_ui"
+                    android:text="We Detected A Crash"
+                    android:textColor="@color/white"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/copperplate_gothic"
+                    android:padding="5dp"
+                    android:text="Are You Okay ?"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/accident_dialog_ok_btn"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/round_button"
+                    android:fontFamily="@font/copperplate_gothic"
+                    android:textSize="15dp"
+                    android:text="I AM OKAY" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/accident_dialog_help_btn"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15dp"
+                    android:background="@drawable/round_button"
+                    android:fontFamily="@font/copperplate_gothic"
+                    android:text="NEED HELP"
+                    android:textColor="@color/red" />
+
+                <TextView
+                    android:id="@+id/accident_dialog_timer_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/segoe_ui"
+                    android:text="Calling for help in 30 seconds"
+                    android:textColor="@color/white"
+                    android:textSize="12dp" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/copperplate_gothic"
-                android:padding="5dp"
-                android:text="CRASH"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/copperplate_gothic"
-                android:padding="5dp"
-                android:text="DETECTED"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/accident_dialog_level_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoe_ui"
-                android:text="We Detected A Crash"
-                android:textColor="@color/white"
-                android:textSize="15dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/copperplate_gothic"
-                android:padding="5dp"
-                android:text="Are You Okay ?"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/round_button"
-                android:fontFamily="@font/copperplate_gothic"
-                android:textSize="15dp"
-                android:text="I AM OKAY" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/accident_dialog_help_btn"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textSize="15dp"
-                android:background="@drawable/round_button"
-                android:fontFamily="@font/copperplate_gothic"
-                android:text="NEED HELP"
-                android:textColor="@color/red" />
-
-            <TextView
-                android:id="@+id/accident_dialog_timer_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/segoe_ui"
-                android:text="Calling for help in 30 seconds"
-                android:textColor="@color/white"
-                android:textSize="12dp" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/alert_icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                android:src="@drawable/alert_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -293,6 +294,7 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/respond_ok_btn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="I AM OK"

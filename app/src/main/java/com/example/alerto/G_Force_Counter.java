@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -42,6 +43,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     Notification notification;
     NotificationManager notificationManager;
     boolean flagSensorOnChange;
+    Thread gForceThread;
 
     CountDownTimer countDownTimer;
 
@@ -50,6 +52,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -85,7 +88,9 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
 
 
-        Thread gForceThread = new Thread(new Runnable() {
+
+
+        gForceThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 calGForce();
@@ -109,6 +114,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         }catch (Exception e){
             Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
@@ -141,6 +147,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             editor.putBoolean("accident_dialog",true);
             editor.putBoolean("respond_dialog",false);
             editor.putBoolean("respond_time_left",false);
+            editor.putString("accidentLevel","High");
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
@@ -159,6 +166,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             editor.putBoolean("accident_dialog",true);
             editor.putBoolean("respond_dialog",false);
             editor.putBoolean("respond_time_left",false);
+            editor.putString("accidentLevel","Medium");
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
@@ -177,11 +185,14 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             editor.putBoolean("accident_dialog",true);
             editor.putBoolean("respond_dialog",false);
             editor.putBoolean("respond_time_left",false);
+            editor.putString("accidentLevel","Low");
             editor.apply();
             //local broadcast to display accident dialog in ui
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "Low");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver,new IntentFilter(user_home.ACTIVITY_MESSAGE));
             //Notification
             callCounterTimerForNotification("Low");
         }
@@ -380,7 +391,6 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
             }
 
-
         }
 
     }
@@ -527,7 +537,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-            //Toast.makeText(MainActivity.this, "!!FAILED TO SEND THE MESSAGE", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "!!FAILED TO SEND THE MESSAGE", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -541,13 +551,37 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String Message = intent.getStringExtra("Activity_Message");
+            String Message = intent.getStringExtra(user_home.Message_KEY);
 
             if(Message.equals("USER_FINE")){
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
-
+                Toast.makeText(context, "well", Toast.LENGTH_SHORT).show();
             }
+            else if (Message.equals("USER_FINE_SOS")) {
+                countDownTimer.cancel();
+                notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                sendSMS("USER_FINE_SOS");
+            }
+            else if (Message.equals("USER_FINE_Medium")) {
+                countDownTimer.cancel();
+                notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                sendSMS("USER_FINE_Medium");
+            }
+            else if (Message.equals("USER_FINE_High")) {
+                countDownTimer.cancel();
+                notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                sendSMS("USER_FINE_High");
+            }
+            else if(Message.contains("Checked")) {
+                countDownTimer.cancel();
+                notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                sendSMS("Help");
+            }
+
+            LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(receiver);
+            sensorManager.registerListener(G_Force_Counter.this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
+
         }
     };
 
