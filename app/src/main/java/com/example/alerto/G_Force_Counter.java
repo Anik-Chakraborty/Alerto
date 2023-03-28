@@ -19,6 +19,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -44,7 +46,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
     NotificationManager notificationManager;
     boolean flagSensorOnChange;
     Thread gForceThread;
-
+    private static MediaPlayer mediaPlayer;
     CountDownTimer countDownTimer;
 
     @Nullable
@@ -114,6 +116,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         }catch (Exception e){
             Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
         }
+        stopRingtone();
 
 
     }
@@ -138,6 +141,8 @@ public class G_Force_Counter extends Service implements SensorEventListener {
 
 
         if(gForce>30 && flagSensorOnChange){
+            startRingtone();
+
             Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
@@ -157,6 +162,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("High");
         }
         else if(gForce>20 && gForce<=30 && flagSensorOnChange){
+            startRingtone();
             Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
@@ -176,6 +182,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("Medium");
         }
         else if(gForce> 5.5 && gForce<=20 && flagSensorOnChange){
+            startRingtone();
             Log.i("G Force", String.valueOf(gForce));
             sensorManager.unregisterListener(this);
             flagSensorOnChange = false;
@@ -197,6 +204,17 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("Low");
         }
 
+    }
+
+    private void startRingtone() {
+        int ringtoneResId = R.raw.alert_sound;
+        Uri ringtoneUri = Uri.parse("android.resource://" + getPackageName() + "/" + ringtoneResId);
+
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(this, ringtoneUri);
+        }
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
     }
 
 
@@ -369,6 +387,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                         intent.putExtra(user_home.Message_KEY, "TimeEmergencyComplete");
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
+                        stopRingtone();
                         sensorManager.registerListener(G_Force_Counter.this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
 
                     }
@@ -388,11 +407,20 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 editor.putBoolean("respond_time_left",false);
                 editor.putBoolean("accident_detect_flag",flagSensorOnChange);
                 editor.apply();
+                stopRingtone();
                 sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL & SensorManager.SENSOR_STATUS_ACCURACY_HIGH);
             }
 
         }
 
+    }
+
+    private void stopRingtone() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     private void displayNotificationSOS(int timeLeft, String levelAccident) {
@@ -556,26 +584,31 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             if(Message.equals("USER_FINE")){
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                stopRingtone();
                 Toast.makeText(context, "well", Toast.LENGTH_SHORT).show();
             }
             else if (Message.equals("USER_FINE_SOS")) {
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                stopRingtone();
                 sendSMS("USER_FINE_SOS");
             }
             else if (Message.equals("USER_FINE_Medium")) {
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                stopRingtone();
                 sendSMS("USER_FINE_Medium");
             }
             else if (Message.equals("USER_FINE_High")) {
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                stopRingtone();
                 sendSMS("USER_FINE_High");
             }
             else if(Message.contains("Checked")) {
                 countDownTimer.cancel();
                 notificationManager.cancel(NOTIFICATION_ACCIDENT_DETECT_ID);
+                stopRingtone();
                 sendSMS("Help");
             }
 

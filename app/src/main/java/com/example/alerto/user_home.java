@@ -1,9 +1,14 @@
 package com.example.alerto;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
@@ -22,12 +27,15 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 public class user_home extends AppCompatActivity implements LocationListener {
 
@@ -39,6 +47,9 @@ public class user_home extends AppCompatActivity implements LocationListener {
     LocationManager locationManager;
     ConstraintLayout accident_dialog, speed_dialog;
     LinearLayout respondDialog;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    Toolbar toolbar;
     Button accident_dialog_help_btn, accident_dialog_ok_btn, respond_ok_btn;
     boolean checkSpeed=false;
 
@@ -313,6 +324,10 @@ public class user_home extends AppCompatActivity implements LocationListener {
         respond_ok_btn = findViewById(R.id.respond_ok_btn);
         check = findViewById(R.id.check);
 
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigation_view);
+        toolbar = findViewById(R.id.toolbar);
+
         if(isMyServiceRunning(G_Force_Counter.class)){
             detectAccidentSwitch.setChecked(true);
         }
@@ -328,6 +343,42 @@ public class user_home extends AppCompatActivity implements LocationListener {
         });
 
 
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.OpenDrawer, R.string.CloseDrawer);
+        drawerLayout.addDrawerListener(toggle);
+
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if(id==R.id.profile){
+//                    Intent intent = new Intent(user_home.this, ProfileActivity.class);
+//                    startActivity(intent);
+                    Toast.makeText(user_home.this, "Profile", Toast.LENGTH_SHORT).show();
+
+                } else if (id == R.id.about) {
+//                    Intent intent = new Intent(user_home.this, AboutActivity.class);
+//                    startActivity(intent);
+                    Toast.makeText(user_home.this, "About", Toast.LENGTH_SHORT).show();
+                } else if (id == R.id.feedback) {
+//                    Intent intent = new Intent(user_home.this, FeedBackActivity.class);
+//                    startActivity(intent);
+                    Toast.makeText(user_home.this, "FeedBack", Toast.LENGTH_SHORT).show();
+                } else{
+//                    Intent intent = new Intent(user_home.this, LogOutActivity.class);
+//                    startActivity(intent);
+                    Toast.makeText(user_home.this, "Log Out", Toast.LENGTH_SHORT).show();
+                }
+
+                drawerLayout.closeDrawer(GravityCompat.START);
+
+                return true;
+            }
+        });
 
         accident_dialog_ok_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -475,6 +526,15 @@ public class user_home extends AppCompatActivity implements LocationListener {
             check.setText("Emergency Call"+" "+speed);
         }
 
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

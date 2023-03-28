@@ -2,6 +2,8 @@
     <string name="app_name">ALERTO</string>
     <string name="login_btn">Log in</string>
     <string name="Proceed">Proceed</string>
+    <string name="OpenDrawer">Open Navigation Drawer</string>
+    <string name="CloseDrawer">Close Navigation Drawer</string>
     <string name="register">Don\'t have an account?</string>
     <string name="reg_btn"><u>Register</u></string>
 </resources>
