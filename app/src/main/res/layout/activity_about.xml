@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:layout_height="match_parent"
+    tools:context=".About">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/white"
+        android:elevation="20dp"
+        android:padding="20dp">
+        <ImageView
+            android:id="@+id/btn_back_about"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/back_shape"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/segoe_ui"
+            android:textSize="25dp"
+            android:text="About"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            tools:context=".MainActivity">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_txt_1"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textStyle="italic"
+                android:textAlignment="center"
+                android:layout_marginTop="5dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Application Name: - ALERTO"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Version: - 1.0"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Supported platform: - Android"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Developed By:"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Anik Chakraborty (canik104@gmail.com)"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Debobrata Chatterjee (devchat000@gmail.com)"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Triasha Karmakar (triashakarmakar@gmail.com)"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Surojit Sahu (surojitsahu09@gmail.com)"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Students of Narula Institute of Technology (NIT)"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Degree :- Bachelor of Technology"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Branch :– Computer Science and Engineering"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Year :- 4th"
+                android:textColor="@color/black"
+                android:fontFamily="@font/segoe_ui"
+                android:textAlignment="center"
+                />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/feedback"
+                android:background="@color/red"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:paddingHorizontal="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FeedBack"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawableTint="@color/white"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

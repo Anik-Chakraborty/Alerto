@@ -257,6 +257,32 @@
 
             </RadioGroup>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/register_user_label"
+                android:text="SOS No 1*"/>
+            <EditText
+                android:id="@+id/sos_no_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/register_user_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:hint="Enter First SOS Phone No"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/register_user_label"
+                android:text="SOS No 2*"/>
+            <EditText
+                android:id="@+id/sos_no_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/register_user_edit_text"
+                android:background="@drawable/edit_text_shape"
+                android:hint="Enter Second SOS Phone No"/>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/sign_up_proceed"
                 android:layout_width="match_parent"

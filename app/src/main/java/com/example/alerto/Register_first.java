@@ -22,11 +22,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
 import java.util.Calendar;
-
+import java.util.regex.Pattern;
 
 
 public class Register_first extends AppCompatActivity {
-    String name, email, password, confirm_password, dob, gender, bloodGrp="none";
+    String name, email, password, confirm_password, dob, gender, bloodGrp="none", sos1, sos2;
     RadioButton rb_btn_gender_selected;
     FirebaseAuth auth;
 
@@ -56,9 +56,13 @@ public class Register_first extends AppCompatActivity {
         EditText sign_up_email = findViewById(R.id.sign_up_email);
         EditText sign_up_password = findViewById(R.id.sign_up_password);
         EditText sign_up_confirm_password = findViewById(R.id.sign_up_confirm_password);
+        EditText sos_no_1 = findViewById(R.id.sos_no_1);
+        EditText sos_no_2 = findViewById(R.id.sos_no_2);
 
         auth = FirebaseAuth.getInstance();
 
+
+        Pattern pattern = Pattern.compile("^(\\+\\d{1,3}[- ]?)?\\d{10}$");
 
         sign_up_proceed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +77,8 @@ public class Register_first extends AppCompatActivity {
                 password = sign_up_password.getText().toString();
                 confirm_password = sign_up_confirm_password.getText().toString();
                 dob = DOB_EditText.getText().toString();
+                sos1 = sos_no_1.getText().toString();
+                sos2 = sos_no_2.getText().toString();
 
                 if(TextUtils.isEmpty(name)){
                     sign_up_name.setError("Please Enter Your Name");
@@ -109,8 +115,11 @@ public class Register_first extends AppCompatActivity {
                     else if(!password.matches( "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&*+=?-]).{8,15}$")){
                         sign_up_password.setError("Password need to be strong");
                         sign_up_password.requestFocus();
-                    }
-                    else{
+                    } else if (!pattern.matcher(sos1).matches() || sos1 == null || sos1.isEmpty()) {
+                        sos_no_1.setError("Enter Valid Phone Number");
+                    } else if (!pattern.matcher(sos2).matches() || sos2 == null || sos2.isEmpty()) {
+                        sos_no_2.setError("Enter Valid Phone Number");
+                    } else{
                         auth.fetchSignInMethodsForEmail(email).addOnCompleteListener( new OnCompleteListener<SignInMethodQueryResult>() {
                             @Override
                             public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
@@ -125,14 +134,19 @@ public class Register_first extends AppCompatActivity {
 
                                             if(bloodGrp.equals("none")){
                                                 Toast.makeText(Register_first.this, "Please Select Your Blood Group", Toast.LENGTH_SHORT).show();
-                                            }
-                                            else{
+                                            } else if (gender.equals("") || gender == null || gender.isEmpty()) {
+                                                Toast.makeText(Register_first.this, "Please Select Your Gender", Toast.LENGTH_SHORT).show();
+
+                                            } else{
                                                 Intent intent = new Intent(Register_first.this, phn_num.class);
                                                 intent.putExtra("name", name);
                                                 intent.putExtra("email", email);
                                                 intent.putExtra("password", password);
                                                 intent.putExtra("dob", dob);
                                                 intent.putExtra("bloodGrp", bloodGrp);
+                                                intent.putExtra("gender",gender);
+                                                intent.putExtra("sos1",sos1);
+                                                intent.putExtra("sos2",sos2);
                                                 startActivity(intent);
                                             }
 

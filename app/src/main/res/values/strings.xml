@@ -6,4 +6,6 @@
     <string name="CloseDrawer">Close Navigation Drawer</string>
     <string name="register">Don\'t have an account?</string>
     <string name="reg_btn"><u>Register</u></string>
+    <string name="about_txt_1">This is an accident detection and respond application that will detect accidents and respond according to the levels of accident. It is mandatory that every user has to fill up the required details and give some mobile numbers of their preference which will be used as emergency numbers in the time of need. When low level accident is detected the application will send SMS to the SOS numbers with the location of the accident. In the case of medium and high level accident the application will send SMS with Location to both medical support and SOS numbers after certain interval of seconds.</string>
+    <string name="feedback_txt">We appreciate your interest in providing us with your valuable Insights. !!!!</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -21,9 +22,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,27 +31,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class user_home extends AppCompatActivity implements LocationListener {
+public class user_home extends AppCompatActivity {
 
     public static final  String Message_KEY = "message_key";
     public static final String ACTIVITY_MESSAGE = "Activity_Message";
-    Location mLastLocation;
     SwitchCompat detectAccidentSwitch, detectSpeedSwitch;
     TextView check,accident_dialog_timer_txt,accident_dialog_level_txt, respondTimeLeft;
-    LocationManager locationManager;
+    ImageView call_national_helpline, call_child_abusing, call_women_safety;
     ConstraintLayout accident_dialog, speed_dialog;
     LinearLayout respondDialog;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-    Button accident_dialog_help_btn, accident_dialog_ok_btn, respond_ok_btn;
-    boolean checkSpeed=false;
+    Button accident_dialog_help_btn, accident_dialog_ok_btn, respond_ok_btn, speed_in_a_hurry;
+    NavigationView navigation_view;
+    static int PERMISSION_CODE= 100;
 
     private BroadcastReceiver accReceiver = new BroadcastReceiver() {
 
@@ -94,6 +97,9 @@ public class user_home extends AppCompatActivity implements LocationListener {
             }
             else if(Message.equals("TimeSOSComplete") && accident_dialog.getVisibility() == View.VISIBLE){
                 Log.i("Time", "TimeSOSComplete");
+                setView();
+            }
+            else if(Message.equals("OverSpeed")){
                 setView();
             }
 
@@ -145,6 +151,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
         editor.putBoolean("accident_dialog",false);
         editor.putBoolean("respond_dialog",false);
         editor.putBoolean("respond_time_left",false);
+        editor.putBoolean("speed_dialog",false);
         editor.apply();
 
         setView();
@@ -184,21 +191,21 @@ public class user_home extends AppCompatActivity implements LocationListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                String text = "Checked";
+                String text = "Message sent to:";
                 // Handle the "OK" button click
                 // You can access the checked state of each option using the checkedOptions array
                 // For example:
                 if (checkedOptions[0]) {
                     // Option 1 is checked
-                    text += "Ambulance";
+                    text += " Ambulance";
                 }
                 if (checkedOptions[1]) {
                     // Option 2 is checked
-                    text += "Fire Service";
+                    text += " Fire Service";
                 }
                 if (checkedOptions[2]) {
                     // Option 3 is checked
-                    text += "Police";
+                    text += " Police";
                 }
                 Toast.makeText(getApplicationContext(),text,Toast.LENGTH_LONG).show();
 
@@ -213,6 +220,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
                     editor.putBoolean("accident_dialog",false);
                     editor.putBoolean("respond_dialog",false);
                     editor.putBoolean("respond_time_left",false);
+                    editor.putBoolean("speed_dialog",false);
                     editor.apply();
 
                     setView();
@@ -257,11 +265,22 @@ public class user_home extends AppCompatActivity implements LocationListener {
             }
             else if(msg.equals("FINE")){
                 iAmOkay();
+            } else if (msg.equals("Hurry")) {
+                hurry();
             }
         }
         catch (Exception e){
 
         }
+    }
+
+    private void hurry() {
+        SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("speed_dialog",false);
+        editor.apply();
+
+        setView();
     }
 
 
@@ -271,7 +290,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
         boolean accident_dialog_visibility_flag = sharedPreferences.getBoolean("accident_dialog", false);
         boolean respond_dialog_visibility_flag = sharedPreferences.getBoolean("respond_dialog",false);
         boolean respond_dialog_time_left_visibility_flag = sharedPreferences.getBoolean("respond_time_left",false);
-
+        boolean speed_dialog_visibility_flag = sharedPreferences.getBoolean("speed_dialog",false);
         if(accident_dialog_visibility_flag){
             accident_dialog.setVisibility(View.VISIBLE);
         }
@@ -294,6 +313,12 @@ public class user_home extends AppCompatActivity implements LocationListener {
         }
 
 
+        if(speed_dialog_visibility_flag){
+            speed_dialog.setVisibility(View.VISIBLE);
+        }
+        else {
+            speed_dialog.setVisibility(View.GONE);
+        }
 
         Log.i("Set View", "Update View");
 
@@ -312,7 +337,7 @@ public class user_home extends AppCompatActivity implements LocationListener {
         setContentView(R.layout.activity_user_home);
 
         accident_dialog = findViewById(R.id.accident_dialog);
-        speed_dialog = findViewById(R.id.spped_dialog);
+        speed_dialog = findViewById(R.id.speed_dialog);
         detectAccidentSwitch = findViewById(R.id.detectAccident);
         detectSpeedSwitch = findViewById(R.id.detectSpeed);
         accident_dialog_level_txt = findViewById(R.id.accident_dialog_level_txt);
@@ -322,7 +347,17 @@ public class user_home extends AppCompatActivity implements LocationListener {
         accident_dialog_help_btn = findViewById(R.id.accident_dialog_help_btn);
         accident_dialog_ok_btn = findViewById(R.id.accident_dialog_ok_btn);
         respond_ok_btn = findViewById(R.id.respond_ok_btn);
+        speed_in_a_hurry = findViewById(R.id.speed_in_a_hurry);
         check = findViewById(R.id.check);
+        navigation_view = findViewById(R.id.navigation_view);
+        call_child_abusing = findViewById(R.id.call_child_abusing);
+        call_national_helpline = findViewById(R.id.call_national_helpline);
+        call_women_safety = findViewById(R.id.call_women_safety);
+
+        TextView name_txt = navigation_view.inflateHeaderView(R.layout.header_layout).findViewById(R.id.name_txt);
+
+        SharedPreferences user_shared_preference = getSharedPreferences("User_Data",MODE_PRIVATE);
+        name_txt.setText(user_shared_preference.getString("name","User Name"));
 
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.navigation_view);
@@ -334,6 +369,48 @@ public class user_home extends AppCompatActivity implements LocationListener {
         else{
             detectAccidentSwitch.setChecked(false);
         }
+
+        call_child_abusing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(user_home.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(user_home.this,new String[]{Manifest.permission.CALL_PHONE},PERMISSION_CODE);
+                }
+                else{
+                    Intent i = new Intent(Intent.ACTION_CALL);
+                    i.setData(Uri.parse("tel:"+"6292286766"));
+                    startActivity(i);
+                }
+            }
+        });
+
+        call_national_helpline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(user_home.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(user_home.this,new String[]{Manifest.permission.CALL_PHONE},PERMISSION_CODE);
+                }
+                else{
+                    Intent i = new Intent(Intent.ACTION_CALL);
+                    i.setData(Uri.parse("tel:"+"8617722517"));
+                    startActivity(i);
+                }
+            }
+        });
+
+        call_women_safety.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(user_home.this,Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(user_home.this,new String[]{Manifest.permission.CALL_PHONE},PERMISSION_CODE);
+                }
+                else{
+                    Intent i = new Intent(Intent.ACTION_CALL);
+                    i.setData(Uri.parse("tel:"+"8617722517"));
+                    startActivity(i);
+                }
+            }
+        });
 
         respond_ok_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,33 +427,59 @@ public class user_home extends AppCompatActivity implements LocationListener {
 
         toggle.syncState();
 
+        navigationView.bringToFront();
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
 
                 if(id==R.id.profile){
-//                    Intent intent = new Intent(user_home.this, ProfileActivity.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(user_home.this, User_Profile.class);
+                    startActivity(intent);
                     Toast.makeText(user_home.this, "Profile", Toast.LENGTH_SHORT).show();
 
                 } else if (id == R.id.about) {
-//                    Intent intent = new Intent(user_home.this, AboutActivity.class);
-//                    startActivity(intent);
-                    Toast.makeText(user_home.this, "About", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(user_home.this, About.class);
+                    startActivity(intent);
+//                    Toast.makeText(user_home.this, "About", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.feedback) {
-//                    Intent intent = new Intent(user_home.this, FeedBackActivity.class);
-//                    startActivity(intent);
-                    Toast.makeText(user_home.this, "FeedBack", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(user_home.this, Feedback.class);
+                    startActivity(intent);
+//                    Toast.makeText(user_home.this, "FeedBack", Toast.LENGTH_SHORT).show();
                 } else{
-//                    Intent intent = new Intent(user_home.this, LogOutActivity.class);
-//                    startActivity(intent);
-                    Toast.makeText(user_home.this, "Log Out", Toast.LENGTH_SHORT).show();
+
+                    stopService(new Intent(user_home.this,G_Force_Counter.class));
+                    stopService(new Intent(user_home.this, Speed_Counter_Service.class));
+                    SharedPreferences.Editor user_shared_preference_editor = user_shared_preference.edit();
+                    user_shared_preference_editor.clear();
+                    user_shared_preference_editor.putBoolean("Login",false);
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(user_home.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+
+//                    Toast.makeText(user_home.this, "Log Out", Toast.LENGTH_SHORT).show();
                 }
 
                 drawerLayout.closeDrawer(GravityCompat.START);
 
                 return true;
+            }
+        });
+
+        speed_in_a_hurry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("speed_dialog",false);
+                editor.apply();
+
+                setView();
+
+                Intent intent = new Intent(user_home.this,Speed_Counter_Service.class);
+                stopService(intent);
             }
         });
 
@@ -401,14 +504,27 @@ public class user_home extends AppCompatActivity implements LocationListener {
                 Intent gForceService = new Intent(user_home.this, G_Force_Counter.class);
                 SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
                 if(isChecked){
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        editor.putBoolean("accident_detect_flag",true);
-                        editor.apply();
-                        startForegroundService(gForceService);
-                    }
-                    else{
-                        startService(gForceService);
+                    if (ActivityCompat.checkSelfPermission(user_home.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                            PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(user_home.this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        // Request permission to access the location
+
+
+                        ActivityCompat.requestPermissions(user_home.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                        detectAccidentSwitch.setChecked(false);
+
+                    }else{
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            editor.putBoolean("accident_detect_flag",true);
+                            editor.apply();
+                            startForegroundService(gForceService);
+                        }
+                        else{
+                            startService(gForceService);
+                        }
                     }
 
                 }
@@ -431,29 +547,45 @@ public class user_home extends AppCompatActivity implements LocationListener {
             }
         });
 
+        if(isMyServiceRunning(Speed_Counter_Service.class)){
+            detectSpeedSwitch.setChecked(true);
+        }
+        else{
+            detectSpeedSwitch.setChecked(false);
+        }
+
+
         detectSpeedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Intent intent = new Intent(user_home.this,Speed_Counter_Service.class);
                 if(isChecked){
-                    checkSpeed = true;
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
                     if (ActivityCompat.checkSelfPermission(user_home.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(user_home.this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(user_home.this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                         // Request permission to access the location
+
                         ActivityCompat.requestPermissions(user_home.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
+                        detectSpeedSwitch.setChecked(false);
+
                     } else {
 
-                        // Register for location updates
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, user_home.this);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startForegroundService(intent);
+                        }
+                        else{
+                            startService(intent);
+                        }
 
                     }
 
                 }
                 else{
+                    stopService(intent);
                     speed_dialog.setVisibility(View.GONE);
                 }
             }
@@ -474,16 +606,6 @@ public class user_home extends AppCompatActivity implements LocationListener {
     }
 
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(checkSpeed){
-            locationManager.removeUpdates( user_home.this);
-        }
-
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -496,36 +618,10 @@ public class user_home extends AppCompatActivity implements LocationListener {
             editor.putBoolean("accident_dialog",false);
             editor.putBoolean("respond_dialog",false);
             editor.putBoolean("respond_time_left",false);
+            editor.putBoolean("speed_dialog",false);
             editor.apply();
         }
         setView();
-    }
-
-    //location
-
-    @Override
-    public void onLocationChanged(Location pCurrentLocation) {
-
-        double speed = 0;
-        if (this.mLastLocation != null)
-            speed = Math.sqrt(
-                    Math.pow(pCurrentLocation.getLongitude() - mLastLocation.getLongitude(), 2)
-                            + Math.pow(pCurrentLocation.getLatitude() - mLastLocation.getLatitude(), 2)
-            ) / (pCurrentLocation.getTime() - this.mLastLocation.getTime());
-        //if there is speed from location
-        if (pCurrentLocation.hasSpeed())
-            //get location speed
-            speed = pCurrentLocation.getSpeed() * 3.6;
-        this.mLastLocation = pCurrentLocation;
-
-
-        if(speed > 10){
-            speed_dialog.setVisibility(View.GONE);
-        }
-        else{
-            check.setText("Emergency Call"+" "+speed);
-        }
-
     }
 
     @Override
@@ -537,18 +633,5 @@ public class user_home extends AppCompatActivity implements LocationListener {
         }
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
 
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }

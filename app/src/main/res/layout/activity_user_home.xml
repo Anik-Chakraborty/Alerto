@@ -12,14 +12,12 @@
     tools:context=".user_home">
 
 
-
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:id="@+id/navigation_view"
-        app:headerLayout="@layout/header_layout"
         app:menu="@menu/navigation_drawer_menu"
         />
 
@@ -196,14 +194,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/spped_dialog"
+                android:id="@+id/speed_dialog"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:layout_marginTop="10dp">
 
                 <LinearLayout
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/alert_shape"
@@ -252,6 +249,7 @@
 
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/speed_in_a_hurry"
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/round_button"
@@ -371,6 +369,7 @@
                         android:text="National Helpline"/>
 
                     <ImageView
+                        android:id="@+id/call_national_helpline"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/icon_call"
@@ -397,6 +396,7 @@
                         android:text="Child Abusing"/>
 
                     <ImageView
+                        android:id="@+id/call_child_abusing"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/icon_call"
@@ -423,6 +423,7 @@
                         android:text="Women Safety"/>
 
                     <ImageView
+                        android:id="@+id/call_women_safety"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/icon_call"

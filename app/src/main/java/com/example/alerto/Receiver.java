@@ -20,6 +20,11 @@ public class Receiver extends BroadcastReceiver {
             move.putExtra("Msg","HELP");
             move.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             context.startActivity(move);
+        } else if (Message.equals("Hurry")) {
+            Intent move = new Intent(context.getApplicationContext(), user_home.class);
+            move.putExtra("Msg","Hurry");
+            move.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(move);
         }
     }
 }
