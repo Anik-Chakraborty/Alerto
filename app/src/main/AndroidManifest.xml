@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.alerto">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
         android:allowBackup="true"
@@ -15,7 +17,15 @@
         android:roundIcon="@mipmap/alerto_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ALERTO">
-
+        <activity
+            android:name=".User_Profile"
+            android:exported="false" />
+        <activity
+            android:name=".Feedback"
+            android:exported="false" />
+        <activity
+            android:name=".About"
+            android:exported="false" />
         <activity
             android:name=".user_home"
             android:exported="false" />
@@ -41,11 +51,12 @@
             android:name=".MainActivity"
             android:exported="true" />
 
-        <service android:name=".G_Force_Counter"
+        <service
+            android:name=".G_Force_Counter"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
+
         <receiver android:name=".Receiver" />
     </application>
-
 
 </manifest>

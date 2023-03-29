@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,15 +27,20 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.ParametersAreNullableByDefault;
+
 public class verify_otp extends AppCompatActivity {
-    String name, email, password, dob, bloodGrp, phn_no, otpId;
+    String name, email, password, dob, bloodGrp, phn_no, otpId, gender, sos1, sos2;
     FirebaseAuth mAuth;
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     FirebaseFirestore db;
+
+    ArrayList<String> Numbers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,13 @@ public class verify_otp extends AppCompatActivity {
         dob = getIntent().getStringExtra("dob").toString();
         bloodGrp = getIntent().getStringExtra("bloodGrp").toString();
         phn_no = getIntent().getStringExtra("phn_no").toString();
+        gender = getIntent().getStringExtra("gender").toString();
+        sos1 = getIntent().getStringExtra("sos1").toString();
+        sos2 = getIntent().getStringExtra("sos2").toString();
+
+        Numbers = new ArrayList<>();
+        Numbers.add(sos1);
+        Numbers.add(sos2);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -136,6 +150,9 @@ public class verify_otp extends AppCompatActivity {
                             user.put("dob", dob);
                             user.put("bloodGrp",bloodGrp);
                             user.put("phoneNo",phn_no);
+                            user.put("gender",gender);
+                            user.put("sos1",sos1);
+                            user.put("sos2",sos2);
 
                             db.collection("user_detail")
                                     .add(user)
@@ -143,6 +160,7 @@ public class verify_otp extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(DocumentReference documentReference) {
                                             Toast.makeText(verify_otp.this, "User registration successful", Toast.LENGTH_SHORT).show();
+                                            sendSMS();
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
@@ -153,14 +171,32 @@ public class verify_otp extends AppCompatActivity {
                                     });
 
                             Intent intent = new Intent(verify_otp.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
 
 
                         } else {
                             Toast.makeText(getApplicationContext(),"Sign in Code Error",Toast.LENGTH_LONG).show();
-
                         }
                     }
                 });
+    }
+
+    private void sendSMS() {
+        for(String no : Numbers){
+            try {
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage(no, null, "You have been added as one of "+name+"'s SOS contacts to an accident detection and response app called Alerto.", null, null);
+                smsManager.sendTextMessage(no, null, " As a result, you will be automatically notified of any accidents that "+name+" encounters.", null, null);
+                //Toast.makeText(MainActivity.this, "!!THE MESSAGE IS SENT SUCCESSFULLY!!", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.i("error",e.getMessage());
+                //Toast.makeText(this, "!!FAILED TO SEND THE MESSAGE", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        Numbers.clear();
+
+
     }
 }
