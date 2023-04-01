@@ -686,7 +686,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.i("location","location");
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
                     Log.i("location","location 1");
@@ -695,7 +695,19 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
                         String userLocation = " current location is: http://maps.google.com/maps?q=" + latitude + "," + longitude;
-                        message.add(name+userLocation);
+
+                        for(String no : SMS_Numbers){
+                            try {
+                                smsManager.sendTextMessage(no, null, name+userLocation, null, null);
+                                //Toast.makeText(MainActivity.this, "!!THE MESSAGE IS SENT SUCCESSFULLY!!", Toast.LENGTH_SHORT).show();
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        SMS_Numbers.clear();
+                        message.clear();
+                        //message.add(name+userLocation);
                     }
                     else{
                         Log.i("error","error");
@@ -723,8 +735,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                 }
             }
         }
-        SMS_Numbers.clear();
-        message.clear();
+
         return true;
     }
 
