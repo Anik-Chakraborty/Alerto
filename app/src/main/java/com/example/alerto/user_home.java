@@ -565,6 +565,7 @@ public class user_home extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Intent over_speed_counter = new Intent(user_home.this,Speed_Counter_Service.class);
+
                 if(isChecked){
 
                     if (ActivityCompat.checkSelfPermission(user_home.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -594,6 +595,14 @@ public class user_home extends AppCompatActivity {
 
                 }
                 else{
+
+                    SharedPreferences sharedPreferences = getSharedPreferences("View_Visible",MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("speed_dialog",false);
+                    editor.apply();
+
+                    setView();
+
                     stopService(over_speed_counter);
                     speed_dialog.setVisibility(View.GONE);
                     Log.i("Hi","p4");

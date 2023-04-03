@@ -23,7 +23,6 @@ import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -141,13 +140,13 @@ public class Speed_Counter_Service extends Service implements LocationListener{
             intent.putExtra("OverSpeed ",speed);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-            vibarte();
+            vibrate();
 
             createNotification(speed);
         }
     }
 
-    private void vibarte() {
+    private void vibrate() {
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         long[] pattern = {0, 2000,10,2000};
         if(vibrator.hasVibrator()){
@@ -155,7 +154,6 @@ public class Speed_Counter_Service extends Service implements LocationListener{
                 vibrator.vibrate(VibrationEffect.createWaveform(pattern,-1));
             }
             else{
-
                 vibrator.vibrate(pattern,-1);
             }
         }
