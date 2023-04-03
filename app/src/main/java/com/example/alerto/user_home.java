@@ -119,15 +119,16 @@ public class user_home extends AppCompatActivity {
                 //only cancel the timer and notification
                 intent.putExtra(user_home.Message_KEY, "USER_FINE");
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                Toast.makeText(user_home.this, "USER_FINE", Toast.LENGTH_SHORT).show();
             }
-            else if (accident_dialog.getVisibility() == View.GONE && respondDialog.getVisibility() == View.VISIBLE && respondTimeLeft.getVisibility() == View.GONE && (accidentLevel.equals("Medium") || accidentLevel.equals("High"))) {
+            else if (accident_dialog.getVisibility() == View.GONE && respondDialog.getVisibility() == View.VISIBLE && respondTimeLeft.getVisibility() == View.VISIBLE && (accidentLevel.equals("Medium") || accidentLevel.equals("High"))) {
                 //only send message to sos contacts about user is ok also cancel the timer and notification
                 intent.putExtra(user_home.Message_KEY, "USER_FINE_SOS");
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                Toast.makeText(user_home.this, "USER_FINE_SOS", Toast.LENGTH_SHORT).show();
             }
 
 
-            Toast.makeText(user_home.this, "Ok", Toast.LENGTH_SHORT).show();
         }
         else{
             //Do nothing
@@ -138,16 +139,19 @@ public class user_home extends AppCompatActivity {
                 //only send message to sos contacts about user is ok also cancel the timer and notification
                 intent.putExtra(user_home.Message_KEY, "USER_FINE_SOS");
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                Toast.makeText(user_home.this, "USER_FINE_SOS 1", Toast.LENGTH_SHORT).show();
             }
             else if (accident_dialog.getVisibility() == View.GONE && respondDialog.getVisibility() == View.VISIBLE && respondTimeLeft.getVisibility() == View.VISIBLE && respondTimeLeft.getText() == "✓ Respond Sent To Emergency Contacts") {
                 //send message to sos contacts and emergency service about user is ok also cancel the timer and notification
                 if (accidentLevel.equals("Medium")) {
                     intent.putExtra(user_home.Message_KEY, "USER_FINE_Medium");
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    Toast.makeText(user_home.this, "USER_FINE_Medium", Toast.LENGTH_SHORT).show();
                 }
                 else if (accidentLevel.equals("High")) {
                     intent.putExtra(user_home.Message_KEY, "USER_FINE_High");
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    Toast.makeText(user_home.this, "USER_FINE_High", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -272,7 +276,8 @@ public class user_home extends AppCompatActivity {
             }
             else if(msg.equals("FINE")){
                 iAmOkay();
-            } else if (msg.equals("Hurry")) {
+            }
+            else if (msg.equals("Hurry")) {
                 hurry();
             }
         }
@@ -288,6 +293,11 @@ public class user_home extends AppCompatActivity {
         editor.apply();
 
         setView();
+
+        Intent intent = new Intent(user_home.this,Speed_Counter_Service.class);
+        stopService(intent);
+
+        detectSpeedSwitch.setChecked(false);
     }
 
 
@@ -487,6 +497,7 @@ public class user_home extends AppCompatActivity {
 
                 Intent intent = new Intent(user_home.this,Speed_Counter_Service.class);
                 stopService(intent);
+                detectSpeedSwitch.setChecked(false);
             }
         });
 

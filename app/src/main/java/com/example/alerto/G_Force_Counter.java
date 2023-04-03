@@ -182,6 +182,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "High");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(user_home.ACTIVITY_MESSAGE));
             //Notification
             callCounterTimerForNotification("High");
         } else if (gForce > 20 && gForce <= 30 && flagSensorOnChange) {
@@ -202,6 +203,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             Intent intent = new Intent(SERVICE_MESSAGE);
             intent.putExtra(user_home.Message_KEY, "Medium");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(user_home.ACTIVITY_MESSAGE));
             //Notification
             callCounterTimerForNotification("Medium");
         } else if (gForce > 5.5 && gForce <= 20 && flagSensorOnChange) {
@@ -228,6 +230,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
             callCounterTimerForNotification("Low");
         }
 
+        gForce =0;
     }
 
     private void startRingtone() {
@@ -235,7 +238,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
         Uri ringtoneUri = Uri.parse("android.resource://" + getPackageName() + "/" + ringtoneResId);
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        long[] pattern = {0, 1000, 2000, 1000};
+        long[] pattern = {2000, 1000, 2000, 1000};
         if (vibrator.hasVibrator()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0));
