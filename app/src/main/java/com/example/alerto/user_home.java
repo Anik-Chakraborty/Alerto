@@ -158,6 +158,7 @@ public class user_home extends AppCompatActivity {
         editor.putBoolean("respond_dialog",false);
         editor.putBoolean("respond_time_left",false);
         editor.putBoolean("speed_dialog",false);
+        editor.putBoolean("accident_detect_flag",true);
         editor.apply();
 
         setView();
@@ -516,7 +517,6 @@ public class user_home extends AppCompatActivity {
 
                         // Request permission to access the location
 
-
                         ActivityCompat.requestPermissions(user_home.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                         detectAccidentSwitch.setChecked(false);
@@ -564,7 +564,7 @@ public class user_home extends AppCompatActivity {
         detectSpeedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Intent intent = new Intent(user_home.this,Speed_Counter_Service.class);
+                Intent over_speed_counter = new Intent(user_home.this,Speed_Counter_Service.class);
                 if(isChecked){
 
                     if (ActivityCompat.checkSelfPermission(user_home.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -578,21 +578,25 @@ public class user_home extends AppCompatActivity {
 
                         detectSpeedSwitch.setChecked(false);
 
+                        Log.i("Hi","p1");
                     } else {
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(intent);
+                            startForegroundService(over_speed_counter);
+                            Log.i("Hi","p2");
                         }
                         else{
-                            startService(intent);
+                            startService(over_speed_counter);
+                            Log.i("Hi","p3");
                         }
 
                     }
 
                 }
                 else{
-                    stopService(intent);
+                    stopService(over_speed_counter);
                     speed_dialog.setVisibility(View.GONE);
+                    Log.i("Hi","p4");
                 }
             }
         });

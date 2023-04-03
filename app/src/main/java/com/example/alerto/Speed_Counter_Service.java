@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -32,8 +33,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Speed_Counter_Service extends Service implements LocationListener{
-    private static final String Foreground_NOTIFICATION_CHANNEL_Second = "Foreground Speed Service Running Notification";
-    private static final int NOTIFICATION_ID_SPEED = 200;
+    private static final String Foreground_NOTIFICATION_CHANNEL = "Foreground Service Running Notification";
+    private static final int NOTIFICATION_ID_SPEED = 100;
     private static final String ACCIDENT_NOTIFICATION_CHANNEL = "Accident Detected Notification";
     LocationManager locationManager;
     private Location mLastLocation;
@@ -50,6 +51,7 @@ public class Speed_Counter_Service extends Service implements LocationListener{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("Hi","Speed");
         Intent notifyUser = new Intent(this, user_home.class);
         PendingIntent actionForeground = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -65,23 +67,30 @@ public class Speed_Counter_Service extends Service implements LocationListener{
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            Notification notificationForeground = new Notification.Builder(this, Foreground_NOTIFICATION_CHANNEL_Second)
+            Notification notificationForeground = new Notification.Builder(this, Foreground_NOTIFICATION_CHANNEL)
                     .setSmallIcon(R.drawable.splash_logo)
                     .setContentText("Service For Over Speed Detection is running")
                     .setSubText("Service Running")
-                    .setChannelId(Foreground_NOTIFICATION_CHANNEL_Second)
+                    .setChannelId(Foreground_NOTIFICATION_CHANNEL)
                     .setContentIntent(actionForeground)
                     .build();
 
-            nm.createNotificationChannel(new NotificationChannel(Foreground_NOTIFICATION_CHANNEL_Second, "Foreground Service Running", NotificationManager.IMPORTANCE_HIGH));
+            nm.createNotificationChannel(new NotificationChannel(Foreground_NOTIFICATION_CHANNEL, "Foreground Service Running", NotificationManager.IMPORTANCE_LOW));
 
             startForeground(NOTIFICATION_ID_SPEED, notificationForeground);
         }
 
-        registerLocationManager();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                registerLocationManager();
+            }
+        });
+
+        thread.start();
 
 
-        return START_STICKY;
+        return Service.START_STICKY;
 
 
     }

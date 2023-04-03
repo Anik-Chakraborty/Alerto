@@ -109,7 +109,7 @@ public class G_Force_Counter extends Service implements SensorEventListener {
                     .setContentIntent(actionForeground)
                     .build();
 
-            nm.createNotificationChannel(new NotificationChannel(Foreground_NOTIFICATION_CHANNEL, "Foreground Service Running", NotificationManager.IMPORTANCE_HIGH));
+            nm.createNotificationChannel(new NotificationChannel(Foreground_NOTIFICATION_CHANNEL, "Foreground Service Running", NotificationManager.IMPORTANCE_LOW));
 
             startForeground(NOTIFICATION_ID, notificationForeground);
         }
