@@ -79,24 +79,15 @@ public class Speed_Counter_Service extends Service implements LocationListener{
             startForeground(NOTIFICATION_ID_SPEED, notificationForeground);
         }
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                registerLocationManager();
-            }
-        });
-
-        thread.start();
-
+        registerLocationManager();
 
         return Service.START_STICKY;
-
 
     }
 
     private void registerLocationManager() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this);
         }
 
@@ -131,12 +122,12 @@ public class Speed_Counter_Service extends Service implements LocationListener{
         boolean flagSensorOnChange = sharedPreferences.getBoolean("accident_detect_flag",true);
 
 
-        if(speed > 10 && flagSensorOnChange){
+        if(speed > 5.00 && flagSensorOnChange){
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("speed_dialog",true);
             editor.apply();
 
-            Intent intent = new Intent(G_Force_Counter.SERVICE_MESSAGE);
+            Intent intent = new Intent(user_home.Message_KEY);
             intent.putExtra("OverSpeed ",speed);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
@@ -148,7 +139,7 @@ public class Speed_Counter_Service extends Service implements LocationListener{
 
     private void vibrate() {
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        long[] pattern = {0, 2000,10,2000};
+        long[] pattern = {2000, 2000,10,2000};
         if(vibrator.hasVibrator()){
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 vibrator.vibrate(VibrationEffect.createWaveform(pattern,-1));

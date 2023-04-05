@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progress.setVisibility(View.VISIBLE);
                 login_btn.setEnabled(false);
                 String email = login_email.getText().toString();
                 String password = login_password.getText().toString();
@@ -67,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     login_password.requestFocus();
                 }
                 else{
+                    progress.setVisibility(View.VISIBLE);
                     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
